@@ -34,7 +34,7 @@
 #endif
 
 #define DUALMINER_IO_SPEED 115200
-#define DUALMINER_HASH_TIME 0.00001250
+#define DUALMINER_HASH_TIME 0.00001350
 
 bool opt_dualminer_test = false;
 
