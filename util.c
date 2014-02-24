@@ -702,29 +702,64 @@ int _hex2bin_char(const char c)
 }
 
 /* Does the reverse of bin2hex but does not allocate any ram */
-bool hex2bin(unsigned char *p, const char *hexstr, size_t len)
+//bool hex2bin(unsigned char *p, const char *hexstr, size_t len)
+//{
+//	int n, o;
+//	
+//	while (len--)
+//	{
+//		n = _hex2bin_char((hexstr++)[0]);
+//		if (unlikely(n == -1))
+//		{
+//badchar:
+//			if (!hexstr[-1])
+//				applog(LOG_ERR, "hex2bin: str truncated");
+//			else
+//				applog(LOG_ERR, "hex2bin: invalid character 0x%02x", (int)hexstr[-1]);
+//			return false;
+//		}
+//		o = _hex2bin_char((hexstr++)[0]);
+//		if (unlikely(o == -1))
+//			goto badchar;
+//		(p++)[0] = (n << 4) | o;
+//	}
+//	
+//	return likely(!hexstr[0]);
+//}/* Does the reverse of bin2hex but does not allocate any ram */
+
+bool
+hex2bin(unsigned char *p, const char *hexstr, size_t len)
 {
-	int n, o;
-	
-	while (len--)
-	{
-		n = _hex2bin_char((hexstr++)[0]);
-		if (unlikely(n == -1))
-		{
-badchar:
-			if (!hexstr[-1])
-				applog(LOG_ERR, "hex2bin: str truncated");
-			else
-				applog(LOG_ERR, "hex2bin: invalid character 0x%02x", (int)hexstr[-1]);
-			return false;
+	bool ret = false;
+
+	while (*hexstr && len) {
+		char hex_byte[4];
+		unsigned int v;
+
+		if (unlikely(!hexstr[1])) {
+			applog(LOG_ERR, "hex2bin str truncated");
+			return ret;
 		}
-		o = _hex2bin_char((hexstr++)[0]);
-		if (unlikely(o == -1))
-			goto badchar;
-		(p++)[0] = (n << 4) | o;
+
+		memset(hex_byte, 0, 4);
+		hex_byte[0] = hexstr[0];
+		hex_byte[1] = hexstr[1];
+
+		if (unlikely(sscanf(hex_byte, "%x", &v) != 1)) {
+			applog(LOG_ERR, "hex2bin sscanf '%s' failed", hex_byte);
+			return ret;
+		}
+
+		*p = (unsigned char) v;
+
+		p++;
+		hexstr += 2;
+		len--;
 	}
-	
-	return likely(!hexstr[0]);
+
+	if (likely(len == 0 && *hexstr == 0))
+		ret = true;
+	return ret;
 }
 
 size_t ucs2_to_utf8(char * const out, const uint16_t * const in, const size_t sz)

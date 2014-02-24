@@ -44,6 +44,7 @@
 #ifndef WIN32
   #include <termios.h>
   #include <sys/stat.h>
+  #include <sys/ioctl.h>
   #include <fcntl.h>
   #ifndef O_CLOEXEC
     #define O_CLOEXEC 0
@@ -61,6 +62,7 @@
 #include "dynclock.h"
 #include "icarus-common.h"
 #include "lowl-vcom.h"
+#include <ctype.h>
 
 // The serial I/O speed - Linux uses a define 'B115200' in bits/termios.h
 #define ICARUS_IO_SPEED 115200
@@ -146,6 +148,1139 @@ static const char *MODE_UNKNOWN_STR = "unknown";
 #define END_CONDITION 0x0000ffff
 #define DEFAULT_DETECT_THRESHOLD 1
 
+
+
+
+
+/* 
+ ** BEGIN DUALMINER HACKING **
+ ** BEGIN DUALMINER HACKING **
+ ** BEGIN DUALMINER HACKING **
+ ** BEGIN DUALMINER HACKING **
+ ** BEGIN DUALMINER HACKING **
+ ** BEGIN DUALMINER HACKING **
+ ** BEGIN DUALMINER HACKING **
+ */
+
+
+
+#define DEFAULT_DELAY_TIME 2000
+
+#define HUBFANS_0_9V_BTC "60"
+#define HUBFANS_1_2V_BTC "0"
+#define DEFAULT_0_9V_BTC "60"
+#define DEFAULT_1_2V_BTC "0"
+
+#define LTC_UNIT_OPEN  0
+#define LTC_UNIT_CLOSE 1
+
+#define RTS_LOW 0
+#define RTS_HIGH 1
+
+const char *pll_freq_1200M_cmd[] =
+{
+	"55AAEF000500E085",
+	"55AA0FFFB02800C0",
+	"",
+};
+
+const char *pll_freq_1100M_cmd[] =
+{
+	"55AAEF0005006085",
+	"55AA0FFF4C2500C0",
+	"",
+};
+
+const char *pll_freq_1000M_cmd[] =
+{
+	"55AAEF000500E084",
+	"55AA0FFFE82100C0",
+	"",
+};
+
+const char *pll_freq_950M_cmd[] =
+{
+	"55AAEF000500A084",
+	"55AA0FFF362000C0",
+	"",
+};
+
+const char *pll_freq_900M_cmd[] =
+{
+	"55AAEF0005006084",
+	"55AA0FFF841E00C0",
+	"",
+};
+
+const char *pll_freq_850M_cmd[] =
+{
+	"55AAEF0005002084",
+	"55AA0FFFD21C00C0",
+	"",
+};
+
+const char *pll_freq_800M_cmd[] =
+{
+	"55AAEF000500E083",
+	"55AA0FFF201B00C0",
+	"",
+};
+
+const char *pll_freq_750M_cmd[] =
+{
+	"55AAEF000500A083",
+	"55AA0FFF6E1900C0",
+	"",
+};
+
+const char *pll_freq_700M_cmd[] =
+{
+	"55AAEF0005006083",
+	"55AA0FFFBC1700C0",
+	"",
+};
+
+const char *pll_freq_650M_cmd[] =
+{
+	"55AAEF0005002083",
+	"55AA0FFF0A1600C0",
+	"",
+};
+
+const char *pll_freq_600M_cmd[] =
+{
+	"55AAEF000500E082",
+	"55AA0FFF581400C0",
+	"",
+};
+
+const char *pll_freq_550M_cmd[] =
+{
+	"55AAEF000500A082",
+	"55AA0FFFA61200C0",
+	"",
+};
+
+const char *pll_freq_500M_cmd[] =
+{
+	"55AAEF0005006082",
+	"55AA0FFFF41000C0",
+	"",
+};
+
+const char *pll_freq_400M_cmd[] =
+{
+	"55AAEF000500E081",
+	"55AA0FFF900D00C0",
+	"",
+};
+
+const char *btc_gating[] =
+{
+	"55AAEF0200000000",
+	"55AAEF0300000000",
+	"55AAEF0400000000",
+	"55AAEF0500000000",
+	"55AAEF0600000000",
+	"",
+};
+
+const char *btc_single_open[] =
+{
+	"55AAEF0200000001",
+	"55AAEF0200000003",
+	"55AAEF0200000007",
+	"55AAEF020000000F",
+	"55AAEF020000001F",
+	"55AAEF020000003F",
+	"55AAEF020000007F",
+	"55AAEF02000000FF",
+	"55AAEF02000001FF",
+	"55AAEF02000003FF",
+	"55AAEF02000007FF",
+	"55AAEF0200000FFF",
+	"55AAEF0200001FFF",
+	"55AAEF0200003FFF",
+	"55AAEF0200007FFF",
+	"55AAEF020000FFFF",
+	"55AAEF020001FFFF",
+	"55AAEF020003FFFF",
+	"55AAEF020007FFFF",
+	"55AAEF02000FFFFF",
+	"55AAEF02001FFFFF",
+	"55AAEF02003FFFFF",
+	"55AAEF02007FFFFF",
+	"55AAEF0200FFFFFF",
+	"55AAEF0201FFFFFF",
+	"55AAEF0203FFFFFF",
+	"55AAEF0207FFFFFF",
+	"55AAEF020FFFFFFF",
+	"55AAEF021FFFFFFF",
+	"55AAEF023FFFFFFF",
+	"55AAEF027FFFFFFF",
+	"55AAEF02FFFFFFFF",
+	"55AAEF0300000001",
+	"55AAEF0300000003",
+	"55AAEF0300000007",
+	"55AAEF030000000F",
+	"55AAEF030000001F",
+	"55AAEF030000003F",
+	"55AAEF030000007F",
+	"55AAEF03000000FF",
+	"55AAEF03000001FF",
+	"55AAEF03000003FF",
+	"55AAEF03000007FF",
+	"55AAEF0300000FFF",
+	"55AAEF0300001FFF",
+	"55AAEF0300003FFF",
+	"55AAEF0300007FFF",
+	"55AAEF030000FFFF",
+	"55AAEF030001FFFF",
+	"55AAEF030003FFFF",
+	"55AAEF030007FFFF",
+	"55AAEF03000FFFFF",
+	"55AAEF03001FFFFF",
+	"55AAEF03003FFFFF",
+	"55AAEF03007FFFFF",
+	"55AAEF0300FFFFFF",
+	"55AAEF0301FFFFFF",
+	"55AAEF0303FFFFFF",
+	"55AAEF0307FFFFFF",
+	"55AAEF030FFFFFFF",
+	"55AAEF031FFFFFFF",
+	"55AAEF033FFFFFFF",
+	"55AAEF037FFFFFFF",
+	"55AAEF03FFFFFFFF",
+	"55AAEF0400000001",
+	"55AAEF0400000003",
+	"55AAEF0400000007",
+	"55AAEF040000000F",
+	"55AAEF040000001F",
+	"55AAEF040000003F",
+	"55AAEF040000007F",
+	"55AAEF04000000FF",
+	"55AAEF04000001FF",
+	"55AAEF04000003FF",
+	"55AAEF04000007FF",
+	"55AAEF0400000FFF",
+	"55AAEF0400001FFF",
+	"55AAEF0400003FFF",
+	"55AAEF0400007FFF",
+	"55AAEF040000FFFF",
+	"55AAEF040001FFFF",
+	"55AAEF040003FFFF",
+	"55AAEF040007FFFF",
+	"55AAEF04000FFFFF",
+	"55AAEF04001FFFFF",
+	"55AAEF04003FFFFF",
+	"55AAEF04007FFFFF",
+	"55AAEF0400FFFFFF",
+	"55AAEF0401FFFFFF",
+	"55AAEF0403FFFFFF",
+	"55AAEF0407FFFFFF",
+	"55AAEF040FFFFFFF",
+	"55AAEF041FFFFFFF",
+	"55AAEF043FFFFFFF",
+	"55AAEF047FFFFFFF",
+	"55AAEF04FFFFFFFF",
+	"55AAEF0500000001",
+	"55AAEF0500000003",
+	"55AAEF0500000007",
+	"55AAEF050000000F",
+	"55AAEF050000001F",
+	"55AAEF050000003F",
+	"55AAEF050000007F",
+	"55AAEF05000000FF",
+	"55AAEF05000001FF",
+	"55AAEF05000003FF",
+	"55AAEF05000007FF",
+	"55AAEF0500000FFF",
+	"55AAEF0500001FFF",
+	"55AAEF0500003FFF",
+	"55AAEF0500007FFF",
+	"55AAEF050000FFFF",
+	"55AAEF050001FFFF",
+	"55AAEF050003FFFF",
+	"55AAEF050007FFFF",
+	"55AAEF05000FFFFF",
+	"55AAEF05001FFFFF",
+	"55AAEF05003FFFFF",
+	"55AAEF05007FFFFF",
+	"55AAEF0500FFFFFF",
+	"55AAEF0501FFFFFF",
+	"55AAEF0503FFFFFF",
+	"55AAEF0507FFFFFF",
+	"55AAEF050FFFFFFF",
+	"55AAEF051FFFFFFF",
+	"55AAEF053FFFFFFF",
+	"55AAEF057FFFFFFF",
+	"55AAEF05FFFFFFFF",
+	"55AAEF0600000001",
+	"55AAEF0600000003",
+	"55AAEF0600000007",
+	"55AAEF060000000F",
+	"55AAEF060000001F",
+	"55AAEF060000003F",
+	"55AAEF060000007F",
+	"55AAEF06000000FF",
+	"55AAEF06000001FF",
+	"55AAEF06000003FF",
+	"55AAEF06000007FF",
+	"55AAEF0600000FFF",
+	"55AAEF0600001FFF",
+	"55AAEF0600003FFF",
+	"55AAEF0600007FFF",
+	"55AAEF060000FFFF",
+	"55AAEF060001FFFF",
+	"55AAEF060003FFFF",
+	"55AAEF060007FFFF",
+	"55AAEF06000FFFFF",
+	"55AAEF06001FFFFF",
+	"55AAEF06003FFFFF",
+	"55AAEF06007FFFFF",
+	"55AAEF0600FFFFFF",
+	"55AAEF0601FFFFFF",
+	"55AAEF0603FFFFFF",
+	"55AAEF0607FFFFFF",
+	"55AAEF060FFFFFFF",
+	"55AAEF061FFFFFFF",
+	"55AAEF063FFFFFFF",
+	"55AAEF067FFFFFFF",
+	"55AAEF06FFFFFFFF",
+	"",
+};
+
+const char *ltc_only_init[] =
+{
+	"55AAEF0200000000",
+	"55AAEF0300000000",
+	"55AAEF0400000000",
+	"55AAEF0500000000",
+	"55AAEF0600000000",
+	"55AAEF3040000000",
+	"55AA1F2810000000",
+	"55AA1F2813000000",
+	"",
+};
+
+
+char *opt_dualminer_pll = NULL;
+bool opt_ltconly = true;
+bool opt_hubfans;
+bool opt_dualminer_test = false;
+char *opt_dualminer_btc_gating = NULL;
+
+
+static int opt_pll_freq=400;
+static int opt_btc_number=160;
+
+
+static unsigned char hex_str[2048];
+
+static void print_hex(unsigned char *data, int len, const unsigned char * prefix)
+{
+    int             i, j, s, blank;
+    unsigned char   *p=data;
+    unsigned char *ptr=hex_str;
+
+    memset(hex_str,0,sizeof(hex_str));
+    if(prefix==NULL)
+	{
+        sprintf(ptr,"\n",prefix);
+        ptr+=1;
+    }
+	else
+	{
+        sprintf(ptr,"%s",prefix);
+        ptr+=strlen(prefix);
+    }
+
+    for(i=s=0; i<len; i++,p++)
+	{
+        if ((i%16)==0)
+		{
+            s = i;
+            sprintf(ptr,"%04x :", i);
+            ptr+=6;
+        }
+        sprintf(ptr," %02x", *p);
+        ptr+=3;
+        if (((i%16)==7) && (i!=(len-1)))
+		{
+            sprintf(ptr," -");
+            ptr+=2;
+        }
+        else if ((i%16)==15)
+		{
+            sprintf(ptr,"    ");
+            ptr+=4;
+            for(j=s; j<=i; j++)
+			{
+                if (isprint(data[j]))
+				{
+                    sprintf(ptr,"%c", data[j]);
+                    ptr+=1;
+                }
+                else
+				{
+                    sprintf(ptr,".");
+                    ptr+=1;
+                }
+            }
+            sprintf(ptr,"\n");
+            ptr+=1;
+        }
+    }
+    if ((i%16)!=0)
+	{
+        blank = ((16-i%16)*3+4) + (((i%16)<=8) ? 2 : 0);
+        for(j=0; j<blank; j++)
+		{
+            sprintf(ptr," ");
+            ptr+=1;
+        }
+        for(j=s; j<i; j++)
+		{
+            if (isprint(data[j]))
+			{
+                sprintf(ptr,"%c", data[j]);
+                ptr+=1;
+            }
+            else
+			{
+                sprintf(ptr,".");
+                ptr+=1;
+            }
+        }
+        sprintf(ptr,"\n");
+        ptr+=1;
+    }
+
+    applog(LOG_DEBUG, "%s", hex_str);
+}
+
+static int get_cts_status(int fd)
+{
+	int ret;
+	int status = 0;
+#ifdef WIN32
+	GetCommModemStatus(_get_osfhandle(fd), &status);
+	applog(LOG_DEBUG, "Get CTS Status is : %d [Windows: 0 is 1.2; 16 is 0.9]\n", status);
+	ret = (status == 0) ? 1 : 0;
+	return ret;
+#else
+	ioctl(fd, TIOCMGET, &status);
+	ret = (status & 0x20) ? 0 : 1;
+	applog(LOG_DEBUG, "Get CTS Status is : %d [Linux: 1 is 1.2; 0 is 0.9]\n", ret);
+	return ret;
+
+#endif
+}
+
+static void set_rts_status(int fd, unsigned int value)
+{
+#ifdef WIN32
+	DCB dcb;
+	memset(&dcb, 0, sizeof(DCB));
+	GetCommState(_get_osfhandle(fd), &dcb);
+	if(value != 0)
+	{
+		dcb.fRtsControl = RTS_CONTROL_ENABLE;
+	}
+	else
+	{
+		dcb.fRtsControl = RTS_CONTROL_DISABLE;
+	}
+	SetCommState(_get_osfhandle(fd), &dcb);
+#else
+	int rts_flag = 0;
+	ioctl(fd, TIOCMGET, &rts_flag);
+	if(value != 0)
+	{
+		rts_flag |= TIOCM_RTS; //√
+	}
+	else
+	{
+		rts_flag &= ~TIOCM_RTS;   //¡¡
+	}
+	ioctl(fd, TIOCMSET, &rts_flag);
+#endif
+}
+
+static void dual_reset(int fd)
+{
+	static int i=0;
+	applog(LOG_DEBUG,"--->>>%s():%d\n",__FUNCTION__,i++);
+
+#ifdef WIN32
+	DCB dcb;
+
+	memset(&dcb, 0, sizeof(DCB));
+	GetCommState(_get_osfhandle(fd), &dcb);
+	dcb.fDtrControl = DTR_CONTROL_ENABLE;
+	SetCommState(_get_osfhandle(fd), &dcb);
+	Sleep(1);
+	GetCommState(_get_osfhandle(fd), &dcb);
+	dcb.fDtrControl = DTR_CONTROL_DISABLE;
+	SetCommState(_get_osfhandle(fd), &dcb);
+
+#else
+
+	int dtr_flag = 0;
+	ioctl(fd, TIOCMGET, &dtr_flag);
+	dtr_flag |= TIOCM_DTR;
+	ioctl(fd, TIOCMSET, &dtr_flag);
+	usleep(1000);
+	ioctl(fd, TIOCMGET, &dtr_flag);
+	dtr_flag &= ~TIOCM_DTR;
+	ioctl(fd, TIOCMSET, &dtr_flag);
+
+#endif
+
+}
+
+static void gc3355_send_cmds(int fd, const char *cmds[])
+{
+	int i = 0;
+	unsigned char ob_bin[32];
+	for(i = 0 ;; i++)
+	{
+		memset(ob_bin, 0, sizeof(ob_bin));
+		if (cmds[i][0] == 0)
+		{
+			break;
+		}
+		hex2bin(ob_bin, cmds[i], sizeof(ob_bin));
+		icarus_write(fd, ob_bin, 8);
+		usleep(DEFAULT_DELAY_TIME);
+	}
+}
+
+static void opt_scrypt_init(int fd)
+{
+	const char initscrypt_ob[16][64] =
+	{
+		"55AA1F2810000000",
+		"55AA1F2813000000",
+		""
+	};
+	unsigned char ob_bin[32];
+	int i;
+
+	for(i = 0; i < 16; i++)
+	{
+		memset(ob_bin, 0, sizeof(ob_bin));
+		if (initscrypt_ob[i][0] == '\0')
+		{
+			break;
+		}
+		else
+		{
+			hex2bin(ob_bin, initscrypt_ob[i], sizeof(ob_bin));
+		}
+		icarus_write(fd, ob_bin, 8);
+		usleep(DEFAULT_DELAY_TIME);
+	}
+}
+
+static void pll_freq_init(int fd, char *pll_freq)
+{
+	const char pll_freq_cmd[48][20] =
+	{
+		"400",
+		"55AAEF000500E081",
+		"55AA0FFF900D00C0",
+		"1200",
+		"55AAEF000500E085",
+		"55AA0FFFB02800C0",
+		"1100",
+		"55AAEF0005006085",
+		"55AA0FFF4C2500C0",
+		"1000",
+		"55AAEF000500E084",
+		"55AA0FFFE82100C0",
+		"950",
+		"55AAEF000500A084",
+		"55AA0FFF362000C0",
+		"900",
+		"55AAEF0005006084",
+		"55AA0FFF841E00C0",
+		"850",
+		"55AAEF0005002084",
+		"55AA0FFFD21C00C0",
+		"800",
+		"55AAEF000500E083",
+		"55AA0FFF201B00C0",
+		"750",
+		"55AAEF000500A083",
+		"55AA0FFF6E1900C0",
+		"700",
+		"55AAEF0005006083",
+		"55AA0FFFBC1700C0",
+		"650",
+		"55AAEF0005002083",
+		"55AA0FFF0A1600C0",
+		"600",
+		"55AAEF000500E082",
+		"55AA0FFF581400C0",
+		"550",
+		"55AAEF000500A082",
+		"55AA0FFFA61200C0",
+		"500",
+		"55AAEF0005006082",
+		"55AA0FFFF41000C0",
+	};
+	unsigned char pllob_bin[10];
+	int i;
+	int found_pll = -1;
+
+	if (pll_freq == NULL)
+	{
+		found_pll = 0;
+	}
+	else
+	{
+		for(i = 0; i < 48; i++)
+		{
+
+			if (pll_freq_cmd[i][0] == '\0')
+			{
+				break;
+			}
+			applog(LOG_DEBUG, "GC3355: pll_freq_cmd[i] is %s, freq %s \n",pll_freq_cmd[i],pll_freq);
+			if (!strcmp(pll_freq, pll_freq_cmd[i]))
+			{
+				found_pll = i;
+				opt_pll_freq=atoi(pll_freq);
+			}
+		}
+
+		if(found_pll == -1)
+		{
+			found_pll = 0;
+		}
+	}
+
+	if(found_pll != -1)
+	{
+		applog(LOG_DEBUG, "GC3355: found freq %s in the support list\n", pll_freq);
+		memset(pllob_bin, 0, sizeof(pllob_bin));
+		applog(LOG_DEBUG, "GC3355: set freq %s, reg1=%s in the support list\n", pll_freq, pll_freq_cmd[found_pll + 1]);
+		hex2bin(pllob_bin, pll_freq_cmd[found_pll + 1], sizeof(pllob_bin));
+		icarus_write(fd, pllob_bin, 8);
+		usleep(1000);
+		memset(pllob_bin, 0, sizeof(pllob_bin));
+		applog(LOG_DEBUG, "GC3355: set freq %s, reg2=%s in the support list\n", pll_freq, pll_freq_cmd[found_pll + 2]);
+		hex2bin(pllob_bin, pll_freq_cmd[found_pll + 2], sizeof(pllob_bin));
+		icarus_write(fd, pllob_bin, 8);
+		usleep(1000);
+	}
+	else
+	{
+		applog(LOG_ERR, "GC3355: freq %s is not supported\n", pll_freq);
+	}
+}
+
+static void pll_freq_init2(int fd, char *pll_freq)
+{
+	int freq;
+	if(pll_freq != NULL)
+	{
+		freq = atoi(pll_freq);
+	}
+	else
+	{
+		freq = 0;
+	}
+
+	opt_pll_freq = freq;
+	switch(freq)
+	{
+		case 400:
+		{
+			gc3355_send_cmds(fd, pll_freq_400M_cmd);
+			break;
+		}
+		case 500:
+		{
+			gc3355_send_cmds(fd, pll_freq_500M_cmd);
+			break;
+		}
+		case 550:
+		{
+			gc3355_send_cmds(fd, pll_freq_550M_cmd);
+			break;
+		}
+		case 600:
+		{
+			gc3355_send_cmds(fd, pll_freq_600M_cmd);
+			break;
+		}
+		case 650:
+		{
+			gc3355_send_cmds(fd, pll_freq_650M_cmd);
+			break;
+		}
+		case 700:
+		{
+			gc3355_send_cmds(fd, pll_freq_700M_cmd);
+			break;
+		}
+		case 750:
+		{
+			gc3355_send_cmds(fd, pll_freq_750M_cmd);
+			break;
+		}
+		case 800:
+		{
+			gc3355_send_cmds(fd, pll_freq_800M_cmd);
+			break;
+		}
+		case 850:
+		{
+			gc3355_send_cmds(fd, pll_freq_850M_cmd);
+			break;
+		}
+		case 900:
+		{
+			gc3355_send_cmds(fd, pll_freq_900M_cmd);
+			break;
+		}
+		case 950:
+		{
+			gc3355_send_cmds(fd, pll_freq_950M_cmd);
+			break;
+		}
+		case 1000:
+		{
+			gc3355_send_cmds(fd, pll_freq_1000M_cmd);
+			break;
+		}
+		case 1100:
+		{
+			gc3355_send_cmds(fd, pll_freq_1100M_cmd);
+			break;
+		}
+		case 1200:
+		{
+			gc3355_send_cmds(fd, pll_freq_1200M_cmd);
+			break;
+		}
+		default: (get_cts_status(fd) == 1) ? gc3355_send_cmds(fd, pll_freq_850M_cmd) : gc3355_send_cmds(fd, pll_freq_550M_cmd);
+	}
+}
+
+
+static void open_btc_unit(int fd, char *opt_btc_gating)
+{
+	unsigned char ob_bin[32];
+	int i;
+	//---btc unit---
+	char btc_gating[5][17] =
+	{
+		"55AAEF0200000000",
+		"55AAEF0300000000",
+		"55AAEF0400000000",
+		"55AAEF0500000000",
+		"55AAEF0600000000",
+	};
+	union
+	{
+	    unsigned int i32[5];
+	    unsigned char c8[20] ;
+	}btc_group;
+
+	int btc_number=0;
+	if (opt_btc_gating== NULL)
+	{
+	    applog(LOG_DEBUG,"%s(): no --btc, use default 70 BTC Unit\n",__FUNCTION__);
+	    btc_number = 70;
+	}
+	else
+	{
+	    applog(LOG_DEBUG,"%s(): %s:%d\n",__FUNCTION__, opt_btc_gating, atoi(opt_btc_gating));
+	    if(atoi(opt_btc_gating)<=160 && atoi(opt_btc_gating)>=0)
+		{
+			btc_number = atoi(opt_btc_gating);
+	    }
+		else
+		{
+			applog(LOG_DEBUG,"%s():invalid btc number:%s:%d, use default 70 BTC Unit\n",__FUNCTION__,opt_btc_gating,atoi(opt_btc_gating));
+			btc_number = 70;
+	    }
+	}
+
+	for(i = 0; i < 5; i++)
+	{
+		btc_group.i32[i]=0;
+		//printf("%s():0x%08x,\n",__FUNCTION__,btc_group.i32[i]);
+	}
+
+	for(i = 0; i < btc_number; i++)
+	{
+		btc_group.i32[i / 32] += 1 << ( i % 32);
+		//printf("%d-%d: 0x%08x\n",i,i/32,btc_group.i32[i/32]);
+	}
+	for(i = 0; i < 5; i++)
+	{
+		//printf("%s():0x%08x,\n",__FUNCTION__,btc_group.i32[i]);
+	}
+	for(i = 0; i < 20; i++)
+	{
+		//printf("%s():0x%02x,\n",__FUNCTION__,btc_group.c8[i]);
+	}
+	for(i = 0; i < 20; i++)
+	{
+		sprintf(&btc_gating[i / 4][8 + (i % 4) * 2], "%02x", btc_group.c8[i]);
+		//printf("%s():%s\n",__FUNCTION__,btc_gating[i/4]);
+	}
+	//---btc unit end---
+
+
+	for(i = 0; i < 5; i++)
+	{
+		memset(ob_bin, 0, sizeof(ob_bin));
+
+		if (btc_gating[i][0] == '\0')	break;
+		hex2bin(ob_bin, btc_gating[i], sizeof(ob_bin));
+
+		icarus_write(fd, ob_bin, 8);
+		usleep(DEFAULT_DELAY_TIME);
+	}
+	opt_btc_number=btc_number;
+}
+
+static void open_btc_unit_single(int fd, unsigned int index)
+{
+	unsigned char ob_bin[32];
+	int i;
+	//---btc unit---
+	char btc_gating[5][17] =
+	{
+		"55AAEF0200000000",
+		"55AAEF0300000000",
+		"55AAEF0400000000",
+		"55AAEF0500000000",
+		"55AAEF0600000000",
+	};
+	union
+	{
+	    unsigned int i32[5];
+	    unsigned char c8[20] ;
+	}btc_group;
+
+
+	for(i=0;i<5;i++)
+	{
+		btc_group.i32[i]=0;
+		//printf("%s():0x%08x,\n",__FUNCTION__,btc_group.i32[i]);
+	}
+
+    index = index%160;
+
+	//for(i=0;i<btc_number;i++)
+	{
+		btc_group.i32[index/32] += 1<<( index%32);
+		//printf("%d-%d: 0x%08x\n",i,i/32,btc_group.i32[i/32]);
+	}
+	for(i=0;i<5;i++)
+	{
+		//printf("%s():0x%08x,\n",__FUNCTION__,btc_group.i32[i]);
+	}
+	for(i=0;i<20;i++)
+	{
+		//printf("%s():0x%02x,\n",__FUNCTION__,btc_group.c8[i]);
+	}
+	for(i=0;i<20;i++)
+	{
+		sprintf(&btc_gating[i/4][8+(i%4)*2],"%02x",btc_group.c8[i]);
+		//printf("%s():%s\n",__FUNCTION__,btc_gating[i/4]);
+	}
+	//---btc unit end---
+
+
+	for(i=0; i<5; i++)
+	{
+		memset(ob_bin, 0, sizeof(ob_bin));
+
+		if (btc_gating[i][0] == '\0')
+		{
+			break;
+		}
+		hex2bin(ob_bin, btc_gating[i], sizeof(ob_bin));
+
+		icarus_write(fd, ob_bin, 8);
+		usleep(DEFAULT_DELAY_TIME);
+	}
+}
+
+static void open_btc_unit_one_by_one(int fd, char *opt_btc_gating)
+{
+	int unit_count = 0;
+	unsigned char ob_bin[32];
+	int i;
+	unit_count = atoi(opt_btc_gating);
+	if(unit_count < 0)
+	{
+		unit_count = 0;
+	}
+	if(unit_count > 160)
+	{
+		unit_count = 160;
+	}
+	if(unit_count > 0 && unit_count <= 160)
+	{
+		for(i = 0; i <= unit_count; i++)
+		{
+			memset(ob_bin, 0, sizeof(ob_bin));
+			hex2bin(ob_bin, btc_single_open[i], sizeof(ob_bin));
+			icarus_write(fd, ob_bin, 8);
+			usleep(DEFAULT_DELAY_TIME * 2);
+		}
+		opt_btc_number=unit_count;
+	}
+	else if(unit_count == 0)
+	{
+		gc3355_send_cmds(fd, btc_gating);
+	}
+}
+
+static void opt_ltc_only_init(int fd)
+{
+	const char init_ltc_only_ob[16][64] =
+	{
+		"55AAEF0200000000",
+		"55AAEF0300000000",
+		"55AAEF0400000000",
+		"55AAEF0500000000",
+		"55AAEF0600000000",
+		"55AAEF3040000000",
+		"55AA1F2810000000",
+		"55AA1F2813000000",
+		""
+	};
+	unsigned char ob_bin[32];
+	int i;
+
+	for(i = 0; i < 16; i++)
+	{
+		memset(ob_bin, 0, sizeof(ob_bin));
+
+		if (init_ltc_only_ob[i][0] == '\0')
+		{
+			break;
+		}
+		hex2bin(ob_bin, init_ltc_only_ob[i], sizeof(ob_bin));
+
+		icarus_write(fd, ob_bin, 8);
+		usleep(DEFAULT_DELAY_TIME);
+	}
+	pll_freq_init2(fd, opt_dualminer_pll);
+}
+
+
+static void open_ltc_unit(int fd, int status)
+{
+	const char ltc_only_ob[16][64] =
+	{
+		"55AA1F2810000000",
+		"",
+	};
+
+	const char ltc_ob[16][64] =
+	{
+		"55AA1F2814000000",
+		"",
+	};
+
+	unsigned char ob_bin[32];
+	int i = 0;
+	if(status == LTC_UNIT_OPEN)
+	{
+		if(opt_ltconly)
+		{
+			opt_ltc_only_init(fd);
+		}
+		else
+		{
+			opt_scrypt_init(fd);
+		}
+	}
+	else
+	{
+		for(i = 0; i < 16; i++)
+		{
+			memset(ob_bin, 0, sizeof(ob_bin));
+			if(opt_ltconly)
+			{
+				if (ltc_only_ob[i][0] == '\0')
+				{
+					break;
+				}
+				else
+				{
+					hex2bin(ob_bin, ltc_only_ob[i], sizeof(ob_bin));
+				}
+			}
+			else
+			{
+				if (ltc_ob[i][0] == '\0')
+				{
+					break;
+				}
+				else
+				{
+					hex2bin(ob_bin, ltc_ob[i], sizeof(ob_bin));
+				}
+			}
+			icarus_write(fd, ob_bin, 8);
+			usleep(DEFAULT_DELAY_TIME);
+		}
+	}
+}
+
+static void dualminer_init(int fd)
+{
+
+	const char init_ob[16][64] =
+	{
+#if 1
+		"55AAEF0200000000",
+		"55AAEF0300000000",
+		"55AAEF0400000000",
+		"55AAEF0500000000",
+		"55AAEF0600000000",
+#endif
+		"55AAEF3020000000",
+		"55AA1F2817000000",
+		""
+	};
+	const char initscrypt_ob[16][64] =
+	{
+		"55AA1F2814000000",
+		"55AA1F2817000000",
+		""
+	};
+
+	unsigned char ob_bin[32];
+	int i;
+
+	for(i = 0; i < 16; i++)
+	{
+		memset(ob_bin, 0, sizeof(ob_bin));
+		if (opt_scrypt)
+		{
+			if (initscrypt_ob[i][0] == '\0')	break;
+			hex2bin(ob_bin, initscrypt_ob[i], sizeof(ob_bin));
+		}
+		else
+		{
+			if (init_ob[i][0] == '\0')	break;
+			hex2bin(ob_bin, init_ob[i], sizeof(ob_bin));
+		}
+
+		icarus_write(fd, ob_bin, 8);
+		usleep(DEFAULT_DELAY_TIME);
+	}
+
+	if (!opt_scrypt)
+	{
+		pll_freq_init2(fd, opt_dualminer_pll);
+		//open_btc_unit(fd);
+	}
+
+	return;
+}
+
+static void gc3355_init(int fd, char *pll_freq, char *btc_unit, bool is_ltc_only)
+{
+	char *unit, *freq;
+	if(get_cts_status(fd) == 1)    // 1.2v
+	{
+		if(opt_scrypt)
+		{
+			if(is_ltc_only)
+			{
+				gc3355_send_cmds(fd, ltc_only_init);
+				//				opt_ltc_only_init(fd);
+				//				(pll_freq == NULL) ? pll_freq_init2(fd, DEFAULT_1_2V_PLL) : 0;
+				applog(LOG_DEBUG,"%s(): scrypt: %d, ltc only: %d; have fan: %d\n", __FUNCTION__, opt_scrypt, is_ltc_only, opt_hubfans);
+			}
+			else
+			{
+				//				dualminer_init(fd);
+				applog(LOG_DEBUG,"%s(): scrypt: %d, ltc only: %d; have fan: %d\n", __FUNCTION__, opt_scrypt, is_ltc_only, opt_hubfans);
+			}
+		}
+		else
+		{
+			//			(pll_freq == NULL) ? pll_freq_init2(fd, DEFAULT_1_2V_PLL) : 0;
+			if(opt_hubfans)
+			{
+				//				((btc_unit == NULL) ? open_btc_unit(fd, HUBFANS_1_2V_BTC) : open_btc_unit(fd, btc_unit));
+				((btc_unit == NULL) ? open_btc_unit_one_by_one(fd, HUBFANS_1_2V_BTC) : open_btc_unit_one_by_one(fd, btc_unit));
+				applog(LOG_DEBUG,"%s(): scrypt: %d, ltc only: %d; have fan: %d\n", __FUNCTION__, opt_scrypt, is_ltc_only, opt_hubfans);
+			}
+			else
+			{
+				//				((btc_unit == NULL) ? open_btc_unit(fd, DEFAULT_1_2V_BTC) : open_btc_unit(fd, btc_unit));
+				((btc_unit == NULL) ? open_btc_unit_one_by_one(fd, DEFAULT_1_2V_BTC) : open_btc_unit_one_by_one(fd, btc_unit));
+				applog(LOG_DEBUG,"%s(): scrypt: %d, ltc only: %d; have fan: %d\n", __FUNCTION__, opt_scrypt, is_ltc_only, opt_hubfans);
+			}
+		}
+	}
+	else       //0.9v
+	{
+		if(opt_scrypt)
+		{
+			if(is_ltc_only)
+			{
+				//				opt_ltc_only_init(fd);
+				gc3355_send_cmds(fd, ltc_only_init);
+				//				(pll_freq == NULL) ? pll_freq_init2(fd, DEFAULT_0_9V_PLL) : 0;
+				applog(LOG_DEBUG,"%s(): scrypt: %d, ltc only: %d; have fan: %d\n", __FUNCTION__, opt_scrypt, is_ltc_only, opt_hubfans);
+			}
+			else
+			{
+				//				dualminer_init(fd);
+				applog(LOG_DEBUG,"%s(): scrypt: %d, ltc only: %d; have fan: %d\n", __FUNCTION__, opt_scrypt, is_ltc_only, opt_hubfans);
+			}
+		}
+		else
+		{
+			//			(pll_freq == NULL) ? pll_freq_init2(fd, DEFAULT_0_9V_PLL) : 0;
+			if(opt_hubfans)
+			{
+				((btc_unit == NULL) ? open_btc_unit_one_by_one(fd, HUBFANS_0_9V_BTC) : open_btc_unit_one_by_one(fd, btc_unit));
+				//				((btc_unit == NULL) ? open_btc_unit(fd, HUBFANS_0_9V_BTC) : open_btc_unit(fd, btc_unit));
+				applog(LOG_DEBUG,"%s(): scrypt: %d, ltc only: %d; have fan: %d\n", __FUNCTION__, opt_scrypt, is_ltc_only, opt_hubfans);
+			}
+			else
+			{
+				((btc_unit == NULL) ? open_btc_unit_one_by_one(fd, DEFAULT_0_9V_BTC) : open_btc_unit_one_by_one(fd, btc_unit));
+				//				((btc_unit == NULL) ? open_btc_unit(fd, DEFAULT_0_9V_BTC) : open_btc_unit(fd, btc_unit));
+				applog(LOG_DEBUG,"%s(): scrypt: %d, ltc only: %d; have fan: %d\n", __FUNCTION__, opt_scrypt, is_ltc_only, opt_hubfans);
+			}
+		}
+	}
+}
+
+
+
+/*
+ ** END DUALMINER HACKING **
+ ** END DUALMINER HACKING **
+ ** END DUALMINER HACKING **
+ ** END DUALMINER HACKING **
+ ** END DUALMINER HACKING **
+ ** END DUALMINER HACKING **
+ ** END DUALMINER HACKING **
+ */
+
+
+
+
+
 BFG_REGISTER_DRIVER(icarus_drv)
 extern const struct bfg_set_device_definition icarus_set_device_funcs[];
 
@@ -220,7 +1355,10 @@ int icarus_gets(unsigned char *buf, int fd, struct timeval *tv_finish, struct th
 		}
 		else
 #endif
-		ret = read(fd, buf, 1);
+		//DUALMINER HACKING - read 4 at a time
+		//ret = read(fd, buf, 1);
+		ret = read(fd, buf, 4);
+
 		if (ret < 0)
 			return ICA_GETS_ERROR;
 
@@ -231,6 +1369,10 @@ int icarus_gets(unsigned char *buf, int fd, struct timeval *tv_finish, struct th
 		{
 			if (epollfd != -1)
 				close(epollfd);
+
+			char *hbuf = (char *)buf;
+			print_hex(hbuf, read_size, "Read from UART:\n"); //DUALMINER
+
 			return ICA_GETS_OK;
 		}
 
@@ -263,6 +1405,8 @@ int icarus_gets(unsigned char *buf, int fd, struct timeval *tv_finish, struct th
 int icarus_write(int fd, const void *buf, size_t bufLen)
 {
 	size_t ret;
+
+	print_hex((char*)buf, bufLen,"Send to UART:\n"); //DUALMINER
 
 	if (unlikely(fd == -1))
 		return 1;
@@ -394,6 +1538,8 @@ const char *icarus_set_timing(struct cgpu_info * const proc, const char * const 
 
 	info->min_data_count = MIN_DATA_COUNT;
 
+	info->read_count += 30; //DUALMINER HACKING
+
 	applog(LOG_DEBUG, "%"PRIpreprv": Init: mode=%s read_count=%d limit=%dms Hs=%e",
 		proc->proc_repr,
 		timing_mode_str(info->timing_mode),
@@ -471,6 +1617,18 @@ bool icarus_detect_custom(const char *devpath, struct device_drv *api, struct IC
 
 	const char golden_nonce[] = "000187a2";
 
+
+	//BEGIN DUALMINER HACKING
+	const char golden_scryptob[] ="55aa1f00000000000000000000000000000000000000000000000000aaaaaaaa711c0000603ebdb6e35b05223c54f8155ac33123006b4192e7aafafbeb9ef6544d2973d700000002069b9f9e3ce8a6778dea3d7a00926cd6eaa9585502c9b83a5601f198d7fbf09be9559d6335ebad363e4f147a8d9934006963030b4e54c408c837ebc2eeac129852a55fee1b1d88f6000c050000000600";
+	const char golden_scryptnonce[] = "00050cdd";
+	const uint32_t golden_scryptnonce_val = 0x00050cdd;
+
+	char *dualnonce;
+	unsigned char my_bin[52],scrypt_bin[160];
+	int i = 2;    //0x000187a2 - 0x000187a0
+	//END DUALMINER HACKING
+
+
 	unsigned char ob_bin[64], nonce_bin[ICARUS_NONCE_SIZE];
 	char nonce_hex[(sizeof(nonce_bin) * 2) + 1];
 
@@ -493,8 +1651,51 @@ bool icarus_detect_custom(const char *devpath, struct device_drv *api, struct IC
 	if (info->read_size == 0)
 		info->read_size = ICARUS_DEFAULT_READ_SIZE;
 
-	hex2bin(ob_bin, golden_ob, sizeof(ob_bin));
-	icarus_write(fd, ob_bin, sizeof(ob_bin));
+
+	//BEGIN DUALMINER HACKING
+
+	//original code:
+	//hex2bin(ob_bin, golden_ob, sizeof(ob_bin));
+	//icarus_write(fd, ob_bin, sizeof(ob_bin));
+
+	dual_reset(fd);
+	// initialize
+	opt_ltconly ? opt_ltc_only_init(fd) : dualminer_init(fd);
+
+	usleep(1000);
+
+	if(opt_scrypt)
+	{
+		memset(scrypt_bin, 0, sizeof(scrypt_bin));
+		hex2bin(scrypt_bin, golden_scryptob, sizeof(scrypt_bin));
+		icarus_write(fd, scrypt_bin, sizeof(scrypt_bin));
+		dualnonce=(char *)golden_scryptnonce;
+	}
+	else
+	{
+		open_btc_unit_single(fd, i);
+		applog(LOG_DEBUG,"dualminer Detect: test btc mode\n");
+		// send test work data
+		hex2bin(ob_bin, golden_ob, sizeof(ob_bin));
+		memset(my_bin, 0, sizeof(my_bin));
+		my_bin[0] = 0x55;
+		my_bin[1] = 0xaa;
+		my_bin[2] = 0x0f;
+		my_bin[4] = 0xa0 + 2 - i;
+		my_bin[5] = 0x87;
+		my_bin[6] = 0x01;
+		memcpy(my_bin + 8, ob_bin, 32);
+		memcpy(my_bin + 40, ob_bin + 52, 12);
+		rev(my_bin+8, 32);
+		rev(my_bin+40, 12);
+		icarus_write(fd, my_bin, sizeof(my_bin));
+		dualnonce=(char *)golden_nonce;
+	}
+
+
+
+	//END DUALMINER HACKING
+
 	cgtime(&tv_start);
 
 	memset(nonce_bin, 0, sizeof(nonce_bin));
@@ -502,29 +1703,72 @@ bool icarus_detect_custom(const char *devpath, struct device_drv *api, struct IC
 	// We will then compare the bytes left in fd with info->read_size to determine
 	// if this is a valid device
 	icarus_gets(nonce_bin, fd, &tv_finish, NULL, 1, ICARUS_NONCE_SIZE);
+
+
+	rev(nonce_bin, 4); //DUAMINER HACKING
+
+
 	
 	// How many bytes were left after reading the above nonce
 	int bytes_left = icarus_excess_nonce_size(fd, info);
-	
-	icarus_close(fd);
+
+
+	//DUALMINER HACKING - leave fd open, store in ->device_fd
+	//icarus_close(fd);
+
 
 	bin2hex(nonce_hex, nonce_bin, sizeof(nonce_bin));
-	if (strncmp(nonce_hex, golden_nonce, 8)) {
+
+
+
+
+
+
+	//DUALMINER HACKING - test dualnone, not golden_nonce
+	//if (strncmp(nonce_hex, golden_nonce, 8)) {
+	if (strncmp(nonce_hex, dualnonce, 8)) {
+
 		applog(LOG_DEBUG,
 			"%s: "
 			"Test failed at %s: get %s, should: %s",
 			api->dname,
-			devpath, nonce_hex, golden_nonce);
+			devpath, nonce_hex, dualnonce);
+
+
+		//BEGIN DUALMINER HACKING
+		icarus_close(fd);
+
+#ifndef WIN32
+		char cmd[128];
+		sprintf(cmd,"sudo chmod 660 %s",devpath);
+		system(cmd);
+#endif
+		//END DUALMINER HACKING
+
+
 		return false;
 	}
-		
-	if (info->read_size - ICARUS_NONCE_SIZE != bytes_left) 
+
+	if (info->read_size - ICARUS_NONCE_SIZE != bytes_left)
 	{
 		applog(LOG_DEBUG,
 			   "%s: "
 			   "Test failed at %s: expected %d bytes, got %d",
 			   api->dname,
 			   devpath, info->read_size, ICARUS_NONCE_SIZE + bytes_left);
+
+
+		//BEGIN DUALMINER HACKING
+		icarus_close(fd);
+
+#ifndef WIN32
+		char cmd[128];
+		sprintf(cmd,"sudo chmod 660 %s",devpath);
+		system(cmd);
+#endif
+		//END DUALMINER HACKING
+
+
 		return false;
 	}
 	
@@ -537,12 +1781,49 @@ bool icarus_detect_custom(const char *devpath, struct device_drv *api, struct IC
 	if (serial_claim_v(devpath, api))
 		return false;
 
+
+
+	//BEGIN DUALMINER HACKING
+
+
+	if(opt_dualminer_test || opt_scrypt)
+	{
+		set_rts_status(fd, RTS_HIGH);
+	}
+
+
+	if(opt_scrypt)
+	{
+		applog(LOG_NOTICE, "Detected LTC UART: %s", devpath);
+	}
+	else
+	{
+		applog(LOG_NOTICE, "Detected BTC UART: %s", devpath);
+	}
+
+	//enable btc clock gating according --btc
+	//	open_btc_unit(fd, opt_dualminer_btc_gating);
+	if(!opt_dualminer_test)
+	{
+		gc3355_init(fd, opt_dualminer_pll, opt_dualminer_btc_gating, opt_ltconly);
+	}
+
+
+	//END DUALMINER HACKING
+
+
+
+
 	/* We have a real Icarus! */
 	struct cgpu_info *icarus;
 	icarus = calloc(1, sizeof(struct cgpu_info));
 	icarus->drv = api;
 	icarus->device_path = strdup(devpath);
-	icarus->device_fd = -1;
+
+	//DUALMINER HACKING - leave fd open, store in ->device_fd
+	//icarus->device_fd = -1;
+	icarus->device_fd = fd;
+
 	icarus->threads = 1;
 	icarus->set_device_funcs = icarus_set_device_funcs;
 	add_cgpu(icarus);
@@ -551,9 +1832,17 @@ bool icarus_detect_custom(const char *devpath, struct device_drv *api, struct IC
 		icarus->proc_repr,
 		devpath);
 
-	applog(LOG_DEBUG, "%"PRIpreprv": Init: baud=%d work_division=%d fpga_count=%d",
-		icarus->proc_repr,
-		baud, work_division, fpga_count);
+	//DUALMINER HACKING
+//	applog(LOG_DEBUG, "%"PRIpreprv": Init: baud=%d work_division=%d fpga_count=%d",
+//		icarus->proc_repr,
+//		baud, work_division, fpga_count);
+
+	if(opt_scrypt) info->prev_hashrate=(double)((50000)*(double)opt_pll_freq)/600;
+	else info->prev_hashrate=((double)opt_btc_number*1000000000/160)*(double)opt_pll_freq/400;
+
+	applog(LOG_DEBUG, "dualminer: Init: pll=%d, btcnum=%d, hashrate=%d",opt_pll_freq,opt_btc_number,info->prev_hashrate);
+
+	//END
 
 	icarus->device_data = info;
 
@@ -578,6 +1867,11 @@ static bool icarus_detect_one(const char *devpath)
 	info->timing_mode = MODE_DEFAULT;
 	info->read_size = ICARUS_DEFAULT_READ_SIZE;
 
+	//DUALMINER
+	info->work_division = 2;
+	info->fpga_count = 2;
+	//END
+
 	if (!icarus_detect_custom(devpath, &icarus_drv, info)) {
 		free(info);
 		return false;
@@ -596,9 +1890,25 @@ static bool icarus_prepare(struct thr_info *thr)
 	struct cgpu_info *icarus = thr->cgpu;
 	struct ICARUS_INFO *info = icarus->device_data;
 
-	icarus->device_fd = -1;
+	//DUALMINER HACKING
 
-	int fd = icarus_open2(icarus->device_path, info->baud, true);
+	//original code:
+	//icarus->device_fd = -1;
+	//int fd = icarus_open2(icarus->device_path, info->baud, true);
+
+	int fd=0;
+	if(icarus->device_fd >0)
+	{
+		fd = icarus->device_fd;
+	}
+	else
+	{
+		fd = icarus_open(icarus->device_path, info[icarus->device_id].baud);
+	}
+	usleep(1000);
+
+	//END HACKING
+
 	if (unlikely(-1 == fd)) {
 		applog(LOG_ERR, "%s: Failed to open %s",
 		       icarus->dev_repr,
@@ -711,20 +2021,70 @@ bool icarus_job_prepare(struct thr_info *thr, struct work *work, __maybe_unused 
 {
 	struct cgpu_info * const icarus = thr->cgpu;
 	struct icarus_state * const state = thr->cgpu_data;
-	uint8_t * const ob_bin = state->ob_bin;
-	
-	memcpy(ob_bin, work->midstate, 32);
-	memcpy(ob_bin + 52, work->data + 64, 12);
-	if (!(memcmp(&ob_bin[56], "\xff\xff\xff\xff", 4)
-	   || memcmp(&ob_bin, "\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0", 32))) {
-		// This sequence is used on cairnsmore bitstreams for commands, NEVER send it otherwise
-		applog(LOG_WARNING, "%"PRIpreprv": Received job attempting to send a command, corrupting it!",
-		       icarus->proc_repr);
-		ob_bin[56] = 0;
+
+
+	//BEGIN DUALMINER HACKING
+
+	//old code:
+	//uint8_t * const ob_bin = state->ob_bin;
+	//
+	//memcpy(ob_bin, work->midstate, 32);
+	//memcpy(ob_bin + 52, work->data + 64, 12);
+	//if (!(memcmp(&ob_bin[56], "\xff\xff\xff\xff", 4)
+	//   || memcmp(&ob_bin, "\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0", 32))) {
+	//	// This sequence is used on cairnsmore bitstreams for commands, NEVER send it otherwise
+	//	applog(LOG_WARNING, "%"PRIpreprv": Received job attempting to send a command, corrupting it!",
+	//	       icarus->proc_repr);
+	//	ob_bin[56] = 0;
+	//}
+	//rev(ob_bin, 32);
+	//rev(ob_bin + 52, 12);
+
+
+	if(opt_scrypt)
+	{
+		//int fd = icarus->device_fd;
+		memset(state->scrypt_bin, 0, 160);
+		state->scrypt_bin[0] = 0x55;
+		state->scrypt_bin[1] = 0xaa;
+
+		state->scrypt_bin[2] = 0x1f;
+		state->scrypt_bin[3] = 0x00;
+
+		print_hex(work->target, 32, "Scrypt target:\n");
+		print_hex(work->midstate, 32, "Scrypt midstate:\n");
+		print_hex(work->data, 80, "Scrypt data:\n");
+
+		memcpy(state->scrypt_bin + 4, work->target, 32);
+		memcpy(state->scrypt_bin + 36, work->midstate, 32);
+		memcpy(state->scrypt_bin + 68, work->data, 80);
+		state->scrypt_bin[148] = 0xff;
+		state->scrypt_bin[149] = 0xff;
+		state->scrypt_bin[150] = 0xff;
+		state->scrypt_bin[151] = 0xff;
 	}
-	rev(ob_bin, 32);
-	rev(ob_bin + 52, 12);
-	
+	else
+	{
+		memset(state->ob_bin, 0, 64);
+		memcpy(state->ob_bin, work->midstate, 32);
+		memcpy(state->ob_bin+52, work->data+64, 12);
+		// Comment by LQX
+		//rev(ob_bin, 32);
+		//rev(ob_bin + 52, 12);
+
+		/* Added by LQX */
+		memset(state->my_bin, 0, 52);
+		state->my_bin[0] = 0x55;
+		state->my_bin[1] = 0xaa;
+		state->my_bin[2] = 0x0f;
+		state->my_bin[3] = 0x00;
+		memcpy(state->my_bin + 8, state->ob_bin, 32);
+		memcpy(state->my_bin + 40, state->ob_bin+52, 12);
+	}
+
+
+	//END HACKING
+
 	return true;
 }
 
@@ -733,9 +2093,25 @@ static bool icarus_job_start(struct thr_info *thr)
 	struct cgpu_info *icarus = thr->cgpu;
 	struct ICARUS_INFO *info = icarus->device_data;
 	struct icarus_state *state = thr->cgpu_data;
-	const uint8_t * const ob_bin = state->ob_bin;
+	const uint8_t * ob_bin; //DUALMINER HACKING
 	int fd = icarus->device_fd;
 	int ret;
+
+	//DUALMINER
+	if (opt_scrypt)
+	{
+		if(opt_ltconly)
+		{
+			opt_scrypt_init(fd);
+		}
+		else
+		{
+			dualminer_init(fd);
+		}
+	}
+	//END
+
+
 
 	// Handle dynamic clocking for "subclass" devices
 	// This needs to run before sending next job, since it hashes the command too
@@ -746,7 +2122,29 @@ static bool icarus_job_start(struct thr_info *thr)
 	
 	cgtime(&state->tv_workstart);
 
-	ret = icarus_write(fd, ob_bin, 64);
+	//DUALMINER HACKING
+
+	//old code:
+	//ret = icarus_write(fd, ob_bin, 64);
+
+	int bin_size;
+
+	if(opt_scrypt)
+	{
+		ob_bin = state->scrypt_bin;
+		bin_size = 160;
+		ret = icarus_write(fd, ob_bin, bin_size);
+	}
+	else
+	{
+		ob_bin = state->my_bin;
+		bin_size = 52;
+		ret = icarus_write(fd, ob_bin, bin_size);
+	}
+
+	//END
+
+
 	if (ret) {
 		do_icarus_close(thr);
 		applog(LOG_ERR, "%"PRIpreprv": Comms error (werr=%d)", icarus->proc_repr, ret);
@@ -754,9 +2152,11 @@ static bool icarus_job_start(struct thr_info *thr)
 		return false;	/* This should never happen */
 	}
 
+	usleep(2000); //DUALMINER HACKING
+
 	if (opt_debug) {
-		char ob_hex[129];
-		bin2hex(ob_hex, ob_bin, 64);
+		char ob_hex[300];
+		bin2hex(ob_hex, ob_bin, bin_size);
 		applog(LOG_DEBUG, "%"PRIpreprv" sent: %s",
 			icarus->proc_repr,
 			ob_hex);
@@ -913,7 +2313,20 @@ static int64_t icarus_scanhash(struct thr_info *thr, struct work *work,
 keepwaiting:
 			/* Icarus will return info->read_size bytes nonces or nothing */
 			memset(nonce_bin, 0, sizeof(nonce_bin));
+
+			//DUALMINER HACKING
+			if (opt_scrypt)
+			{
+				read_count = 48;
+			}
+			else
+			{
+				read_count = 16;
+			}
+			//
+
 			ret = icarus_gets(nonce_bin, fd, &state->tv_workfinish, thr, read_count, info->read_size);
+
 			switch (ret) {
 				case ICA_GETS_RESTART:
 					// The prepared work is invalid, and the current work is abandoned
@@ -934,6 +2347,12 @@ keepwaiting:
 				case ICA_GETS_OK:
 					break;
 			}
+
+
+			//DUALMINER HACKING
+			rev(nonce_bin, 4);
+			//END
+
 		}
 
 		tv_start = state->tv_workstart;
@@ -1026,8 +2445,18 @@ keepwaiting:
 		icarus_transition_work(state, work);
 		// ONLY up to just when it aborted
 		// We didn't read a reply so we don't subtract ICARUS_READ_TIME
-		estimate_hashes = ((double)(elapsed.tv_sec)
-					+ ((double)(elapsed.tv_usec))/((double)1000000)) / info->Hs;
+
+		//DUALMINER HACKING
+		//original code:
+		//estimate_hashes = ((double)(elapsed.tv_sec)
+		//			+ ((double)(elapsed.tv_usec))/((double)1000000)) / info->Hs;
+
+		applog(LOG_DEBUG, "dualminer hashrate=%d", info->prev_hashrate);
+		estimate_hashes = ((double)(elapsed.tv_sec) + ((double)(elapsed.tv_usec))/((double)1000000))*info->prev_hashrate;
+
+		//END HACKING
+
+
 
 		// If some Serial-USB delay allowed the full nonce range to
 		// complete it can't have done more than a full nonce
@@ -1051,9 +2480,34 @@ keepwaiting:
 		inc_hw_errors(thr, state->last_work, nonce);
 	icarus_transition_work(state, work);
 
-	hash_count = (nonce & info->nonce_mask);
-	hash_count++;
-	hash_count *= info->fpga_count;
+	//DUALMINER HACKING
+
+	//original code:
+	//hash_count = (nonce & info->nonce_mask);
+	//hash_count++;
+	//hash_count *= info->fpga_count;
+
+	if (!was_hw_error)
+	{
+		//do_dualminer_close(thr);
+		hash_count = opt_scrypt?nonce:((double)(((double)nonce)*opt_btc_number)/160);
+		info->prev_hashrate=(double)hash_count/((double)(elapsed.tv_sec) + ((double)(elapsed.tv_usec))/((double)1000000));
+		applog(LOG_DEBUG, "dualminer hashcount = %d, hashrate=%d, opt_btc_number=%d", hash_count, info->prev_hashrate, opt_btc_number);
+
+	}
+	else
+	{
+		hash_count = ((double)(elapsed.tv_sec) + ((double)(elapsed.tv_usec))/((double)1000000))*info->prev_hashrate;
+	}
+
+	//	hash_count = (nonce & info->nonce_mask);
+	//	hash_count++;
+	//	hash_count *= info->fpga_count;
+
+
+
+	//END
+
 
 	applog(LOG_DEBUG, "%"PRIpreprv" nonce = 0x%08x = 0x%08" PRIx64 " hashes (%"PRId64".%06lus)",
 	       icarus->proc_repr,
@@ -1305,7 +2759,26 @@ const char *icarus_set_reopen(struct cgpu_info * const proc, const char * const 
 
 static void icarus_shutdown(struct thr_info *thr)
 {
-	do_icarus_close(thr);
+	//DUALMINER HACKING
+
+	if(!opt_dualminer_test)
+	{
+		if(opt_scrypt)
+		{
+			open_ltc_unit(thr->cgpu->device_fd, LTC_UNIT_CLOSE);
+		}
+		else
+		{
+			open_btc_unit(thr->cgpu->device_fd, "0");
+		}
+		set_rts_status(thr->cgpu->device_fd, RTS_LOW);
+		do_icarus_close(thr);
+	}
+
+	//END
+
+
+	//do_icarus_close(thr);
 	free(thr->cgpu_data);
 }
 
@@ -1321,8 +2794,8 @@ const struct bfg_set_device_definition icarus_set_device_funcs[] = {
 };
 
 struct device_drv icarus_drv = {
-	.dname = "icarus",
-	.name = "ICA",
+	.dname = "dualminer",
+	.name = "DM",
 	.probe_priority = -115,
 	.lowl_probe = icarus_lowl_probe,
 	.get_api_stats = icarus_drv_stats,

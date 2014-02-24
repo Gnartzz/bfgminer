@@ -109,6 +109,9 @@ struct ICARUS_INFO {
 	
 	// Bytes to read from Icarus for nonce
 	int read_size;
+
+	/* DUALMINER HACKING */
+	int prev_hashrate;
 };
 
 struct icarus_state {
@@ -121,6 +124,10 @@ struct icarus_state {
 	bool identify;
 	
 	uint8_t ob_bin[64];
+
+	/* DUALMINER HACKING */
+	unsigned char my_bin[52];
+	unsigned char scrypt_bin[160];
 };
 
 bool icarus_detect_custom(const char *devpath, struct device_drv *, struct ICARUS_INFO *);

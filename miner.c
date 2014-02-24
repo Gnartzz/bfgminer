@@ -8627,6 +8627,46 @@ void set_target(unsigned char *dest_target, double diff)
 		applog(LOG_DEBUG, "Generated target %s", htarget);
 	}
 }
+/* Diff 1 is a 256 bit unsigned integer of
+ * 0x00000000ffff0000000000000000000000000000000000000000000000000000
+ * so we use a big endian 64 bit unsigned integer centred on the 5th byte to
+ * cover a huge range of difficulty targets, though not all 256 bits' worth */
+//void set_target(unsigned char *dest_target, double diff)
+//{
+//	unsigned char target[32];
+//	uint64_t *data64, h64;
+//	double d64;
+//
+//	d64 = diffone;
+//	d64 /= diff;
+//	h64 = d64;
+//
+//	memset(target, 0, 32);
+//	if (h64) {
+//		unsigned char rtarget[32];
+//
+//		memset(rtarget, 0, 32);
+//		if (opt_scrypt)
+//			data64 = (uint64_t *)(rtarget + 2);
+//		else
+//			data64 = (uint64_t *)(rtarget + 4);
+//		*data64 = htobe64(h64);
+//		swab256(target, rtarget);
+//	} else {
+//		/* Support for the classic all FFs just-below-1 diff */
+//		if (opt_scrypt)
+//			memset(target, 0xff, 30);
+//		else
+//			memset(target, 0xff, 28);
+//	}
+//
+//	if (opt_debug) {
+//		char htarget[65];
+//		bin2hex(htarget, target, 32);
+//		applog(LOG_DEBUG, "Generated target %s", htarget);
+//	}
+//	memcpy(dest_target, target, 32);
+//}
 
 void stratum_work_cpy(struct stratum_work * const dst, const struct stratum_work * const src)
 {
@@ -10500,15 +10540,15 @@ rescan:
 	bfg_need_detect_rescan = false;
 	
 #ifdef HAVE_BFG_LOWLEVEL
-	if (!opt_scrypt)
-	{
+	//if (!opt_scrypt)
+	//{
 		struct lowlevel_device_info * const infolist = lowlevel_scan(), *info, *infotmp;
 		
 		LL_FOREACH_SAFE(infolist, info, infotmp)
 			probe_device(info);
 		LL_FOREACH_SAFE(infolist, info, infotmp)
 			pthread_join(info->probe_pth, NULL);
-	}
+	//}
 #endif
 	
 	struct driver_registration *reg, *tmp;
