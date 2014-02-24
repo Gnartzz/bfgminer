@@ -689,19 +689,19 @@ void bin2hex(char *out, const void *in, size_t len)
 	out[0] = '\0';
 }
 
-static inline
-int _hex2bin_char(const char c)
-{
-	if (c >= '0' && c <= '9')
-		return c - '0';
-	if (c >= 'a' && c <= 'f')
-		return (c - 'a') + 10;
-	if (c >= 'A' && c <= 'F')
-		return (c - 'A') + 10;
-	return -1;
-}
-
-/* Does the reverse of bin2hex but does not allocate any ram */
+//static inline
+//int _hex2bin_char(const char c)
+//{
+//	if (c >= '0' && c <= '9')
+//		return c - '0';
+//	if (c >= 'a' && c <= 'f')
+//		return (c - 'a') + 10;
+//	if (c >= 'A' && c <= 'F')
+//		return (c - 'A') + 10;
+//	return -1;
+//}
+//
+///* Does the reverse of bin2hex but does not allocate any ram */
 //bool hex2bin(unsigned char *p, const char *hexstr, size_t len)
 //{
 //	int n, o;
@@ -3086,4 +3086,89 @@ uint8_t crc8ccitt(const void * const buf, const size_t buflen)
 	for (int i = 0; i < buflen; ++i)
 		crc = _crc8ccitt_table[crc ^ *p++];
 	return crc;
+}
+
+static
+unsigned char hex_str[2048];
+
+void print_hex(unsigned char *data, int len, const unsigned char * prefix)
+{
+    int i, j, s, blank;
+    unsigned char *p = data;
+    unsigned char *ptr = hex_str;
+
+    memset(hex_str, 0, sizeof(hex_str));
+    if(prefix == NULL)
+	{
+        sprintf(ptr, "\n", prefix);
+        ptr += 1;
+    }
+	else
+	{
+        sprintf(ptr, "%s", prefix);
+        ptr += strlen(prefix);
+    }
+
+    for(i = s = 0; i < len; i++, p++)
+	{
+        if ((i % 16) == 0)
+		{
+            s = i;
+            sprintf(ptr, "%04x :", i);
+            ptr += 6;
+        }
+        sprintf(ptr, " %02x", *p);
+        ptr += 3;
+        if (((i % 16) == 7) && (i != (len - 1)))
+		{
+            sprintf(ptr, " -");
+            ptr += 2;
+        }
+        else if ((i % 16) == 15)
+		{
+            sprintf(ptr, "    ");
+            ptr += 4;
+            for(j = s; j <= i; j++)
+			{
+                if (isprint(data[j]))
+				{
+                    sprintf(ptr, "%c", data[j]);
+                    ptr += 1;
+                }
+                else
+				{
+                    sprintf(ptr, ".");
+                    ptr += 1;
+                }
+            }
+            sprintf(ptr, "\n");
+            ptr += 1;
+        }
+    }
+    if ((i % 16) != 0)
+	{
+        blank = ((16 - i % 16) * 3 + 4) + (((i % 16) <= 8) ? 2 : 0);
+        for( j = 0; j < blank; j++)
+		{
+            sprintf(ptr," ");
+            ptr += 1;
+        }
+        for(j = s; j < i; j++)
+		{
+            if (isprint(data[j]))
+			{
+                sprintf(ptr, "%c", data[j]);
+                ptr += 1;
+            }
+            else
+			{
+                sprintf(ptr, ".");
+                ptr += 1;
+            }
+        }
+        sprintf(ptr, "\n");
+        ptr += 1;
+    }
+
+    applog(LOG_DEBUG, "%s", hex_str);
 }

@@ -1108,12 +1108,12 @@ int get_serial_cts(int fd)
 	return (flags & TIOCM_CTS) ? 1 : 0;
 }
 
-int set_serial_rts(int fd, int rts)
+void set_serial_rts(int fd, unsigned int rts)
 {
 	int flags;
 
 	if (!fd)
-		return -1;
+		return;
 
 	ioctl(fd, TIOCMGET, &flags);
 	
@@ -1123,7 +1123,6 @@ int set_serial_rts(int fd, int rts)
 		flags &= ~TIOCM_RTS;
 
 	ioctl(fd, TIOCMSET, &flags);
-	return flags & TIOCM_CTS;
 }
 #else
 int get_serial_cts(const int fd)
@@ -1139,6 +1138,18 @@ int get_serial_cts(const int fd)
 		return -1;
 
 	return (flags & MS_CTS_ON) ? 1 : 0;
+}
+
+void set_serial_rts(int fd, unsigned int rts)
+{
+	DCB dcb;
+	memset(&dcb, 0, sizeof(DCB));
+	GetCommState(_get_osfhandle(fd), &dcb);
+	if(value != 0)
+		dcb.fRtsControl = RTS_CONTROL_ENABLE;
+	else
+		dcb.fRtsControl = RTS_CONTROL_DISABLE;
+	SetCommState(_get_osfhandle(fd), &dcb);
 }
 #endif // ! WIN32
 
