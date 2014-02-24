@@ -1145,7 +1145,7 @@ void set_serial_rts(int fd, unsigned int rts)
 	DCB dcb;
 	memset(&dcb, 0, sizeof(DCB));
 	GetCommState(_get_osfhandle(fd), &dcb);
-	if(value != 0)
+	if (rts != 0)
 		dcb.fRtsControl = RTS_CONTROL_ENABLE;
 	else
 		dcb.fRtsControl = RTS_CONTROL_DISABLE;
